@@ -1,3 +1,4 @@
+using Project2398.Common;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -15,7 +16,7 @@ namespace Project2398
     };
     private int _vertexBufferObject;
     private int _vertexArrayObject;
-    // private Shader _shader;
+    private Shader? _shader;
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -31,11 +32,14 @@ namespace Project2398
       GL.BindVertexArray(_vertexArrayObject);
       GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
       GL.EnableVertexAttribArray(0);
+      _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+      _shader.Use();
     }
     int time = Environment.TickCount;
     int count = 0;
     protected override void OnRenderFrame(FrameEventArgs e)
     {
+      base.OnRenderFrame(e);
       count++;
       if (Environment.TickCount - time >= 1000)
       {
@@ -43,8 +47,8 @@ namespace Project2398
         count = 0;
         time = Environment.TickCount;
       }
-      base.OnRenderFrame(e);
       GL.Clear(ClearBufferMask.ColorBufferBit);
+      _shader.Use();
       GL.BindVertexArray(_vertexArrayObject);
       GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
       SwapBuffers();
