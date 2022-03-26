@@ -4,7 +4,7 @@ using Project2398.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Diagnostics;
+using OpenTK.Mathematics;
 
 namespace Project2398
 {
@@ -12,21 +12,22 @@ namespace Project2398
   {
     private readonly float[] _vertices =
     {
-    0.5f, 0.5f, 0.0f,   // 右上角
-    0.5f, -0.5f, 0.0f,  // 右下角
-    -0.5f, -0.5f, 0.0f, // 左下角
-    -0.5f, 0.5f, 0.0f   // 左上角
+//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
     };
-    private readonly int[] _indices =
+    private readonly uint[] _indices =
     {
-    0, 1, 3, // 第一个三角形
-    1, 2, 3  // 第二个三角形
+    0, 1, 3,
+    1, 2, 3
     };
     private int _vertexBufferObject;
     private int _vertexArrayObject;
     private int _elementBufferObject;
     private Shader _shader;
-
+    private Texture _texture;
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -46,21 +47,38 @@ namespace Project2398
       GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject);
       GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(int), _indices, BufferUsageHint.StaticDraw);
 
-      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-      GL.EnableVertexAttribArray(0);
-
       _shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-      
-      GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-    }
+      _shader.Use();
 
+      GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+      GL.EnableVertexAttribArray(0);
+      GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+      GL.EnableVertexAttribArray(1);
+      GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+      GL.EnableVertexAttribArray(2);
+
+      _texture = Texture.LoadFromFile("Resources/container.png");
+      _texture.Use(TextureUnit.Texture0);
+      // GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+    }
+    private int time = Environment.TickCount;
+    private int count = 0;
     protected override void OnRenderFrame(FrameEventArgs e)
     {
+      count++;
+      int tick = Environment.TickCount;
+      if (tick - time > 1000)
+      {
+        Console.WriteLine($"Time: {time}, FPS: {count}");
+        time = tick;
+        count = 0;
+      }
+
       base.OnRenderFrame(e);
       GL.Clear(ClearBufferMask.ColorBufferBit);
-      _shader.Use();
       GL.BindVertexArray(_vertexArrayObject);
-      GL.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
+      _shader.Use();
+      GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
       SwapBuffers();
     }
 
