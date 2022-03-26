@@ -27,7 +27,8 @@ namespace Project2398
     private int _vertexArrayObject;
     private int _elementBufferObject;
     private Shader _shader;
-    private Texture _texture;
+    private Texture _texture0;
+    private Texture _texture1;
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -57,8 +58,12 @@ namespace Project2398
       GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
       GL.EnableVertexAttribArray(2);
 
-      _texture = Texture.LoadFromFile("Resources/container.png");
-      _texture.Use(TextureUnit.Texture0);
+      _texture0 = Texture.LoadFromFile("Resources/container.png");
+      _texture0.Use(TextureUnit.Texture0);
+      _texture1 = Texture.LoadFromFile("Resources/awesomeface.png");
+      _texture1.Use(TextureUnit.Texture1);
+      _shader.SetInt("texture0", 0);
+      _shader.SetInt("texture1", 1);
       // GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
     }
     private int time = Environment.TickCount;
@@ -78,6 +83,10 @@ namespace Project2398
       GL.Clear(ClearBufferMask.ColorBufferBit);
       GL.BindVertexArray(_vertexArrayObject);
       _shader.Use();
+      _shader.SetMatrix4("transform", Matrix4.CreateRotationZ(tick / 100.0f) * Matrix4.CreateRotationY(tick / 100.0f));
+
+      _texture0.Use(TextureUnit.Texture0);
+      _texture1.Use(TextureUnit.Texture1);
       GL.DrawElements(PrimitiveType.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
       SwapBuffers();
     }
