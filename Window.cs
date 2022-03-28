@@ -142,16 +142,17 @@ namespace Project2398
       GL.Enable(EnableCap.DepthTest);
 
       lightPos = new Vector3(
-        (float)Math.Sin(tick / 500.0f + Math.PI) * 2.5f,
-        (float)Math.Cos(tick / 250.0f + Math.PI) * 0.5f + 4.0f,
-        (float)Math.Cos(tick / 500.0f + Math.PI) * 2.5f
+        (float)Math.Sin(tick / 5000.0f + Math.PI) * 2.5f,
+        (float)Math.Cos(tick / 2500.0f + Math.PI) * 0.5f + 4.0f,
+        (float)Math.Cos(tick / 5000.0f + Math.PI) * 2.5f
       );
-      lightColor = new Vector3(1.0f, 1.0f, 1.0f);
+      lightColor = new Vector3(1.0f, (float)Math.Sin(tick / 1000.0f), 1.0f);
 
       GL.BindVertexArray(_vertexArrayObject);
       _shader.Use();
       _shader.SetVector3("lightPos", lightPos);
       _shader.SetVector3("lightColor", lightColor);
+      _shader.SetVector3("viewPos", _camera.Position);
 
       _texture0.Use(TextureUnit.Texture0);
       _shader.SetInt("texture0", 0);

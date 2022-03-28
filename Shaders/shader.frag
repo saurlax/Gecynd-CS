@@ -8,6 +8,7 @@ out vec4 outputColor;
 uniform sampler2D texture0;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
+uniform vec3 viewPos;
 
 void main()
 {
@@ -17,6 +18,13 @@ void main()
 
   vec3 lightDir = normalize(lightPos - fragPos);
   vec3 diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
-  vec3 light = ambient + diffuse;
+  
+  float specularStrength = 0.5;
+  vec3 viewDir = normalize(viewPos - fragPos);
+  vec3 reflectDir = reflect(-lightDir, normal);
+  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+  vec3 specular = specularStrength * spec * lightColor;
+
+  vec3 light = ambient + diffuse + specular;
   outputColor = vec4(vec3(texture(texture0, texCoord)) * light, 1.0);
 }
