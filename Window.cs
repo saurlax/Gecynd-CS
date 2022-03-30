@@ -120,13 +120,14 @@ namespace Project2398
 
       _texture1 = Texture.LoadFromFile("Resources/ground.png");
       _texture1.Use(TextureUnit.Texture1);
-
+      chunk = new Chunk();
       // GL.PolygonMode(MaterialFace.FronCosdBack, PolygonMode.Line);
     }
     private int time = Environment.TickCount;
     private int count = 0;
     private Vector3 lightPos, lightColor;
-    protected override void OnRenderFrame(FrameEventArgs e)
+    private Chunk chunk;
+    protected override async void OnRenderFrame(FrameEventArgs e)
     {
       count++;
       int tick = Environment.TickCount;
@@ -140,6 +141,7 @@ namespace Project2398
       base.OnRenderFrame(e);
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
       GL.Enable(EnableCap.DepthTest);
+      GL.Enable(EnableCap.CullFace);
 
       lightPos = new Vector3(
         (float)Math.Sin(tick / 5000.0f + Math.PI) * 2.5f,
@@ -161,20 +163,19 @@ namespace Project2398
       _shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
       _shader.SetMatrix4("model", Matrix4.CreateScale(1.0f));
       GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Length / 5);
-      _shader.SetMatrix4("model",
-             Matrix4.CreateTranslation(
-               (float)Math.Sin(tick / 1000.0f) * 2.0f,
-               (float)Math.Cos(tick / 1000.0f) + 3.0f,
-              (float)Math.Cos(tick / 1000.0f) * 2.0f
-             ));
-      GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Length / 5);
-      _shader.SetMatrix4("model",
-             Matrix4.CreateTranslation(
-               (float)Math.Sin(tick / 1000.0f + Math.PI) * 2.0f,
-               (float)Math.Cos(tick / 1000.0f + Math.PI) + 3.0f,
-              (float)Math.Cos(tick / 1000.0f + Math.PI) * 2.0f
-             ));
-      GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Length / 5);
+
+      foreach (Chunk.ChunkNode n in chunk.GetChunkNode().GetChildNodes())
+      {
+        if (n.GetChildNodes() != null)
+        {
+
+        }
+        else
+        {
+          
+        }
+      }
+
 
       GL.BindVertexArray(groundVAO);
       _shader.Use();

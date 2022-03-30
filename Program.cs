@@ -8,7 +8,7 @@ namespace Project2398
   {
     private static void Main()
     {
-      Console.WriteLine("Hello Project2398");
+      Console.WriteLine(2 << 1 - 1);
       NativeWindowSettings nativeWindowSettings = new NativeWindowSettings()
       {
         Size = new Vector2i(800, 600),
