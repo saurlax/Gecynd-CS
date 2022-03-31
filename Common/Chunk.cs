@@ -1,87 +1,103 @@
+using OpenTK.Mathematics;
+
 namespace Project2398.Common
 {
   public class Chunk
   {
-    // 一个区块的大小为16^3 * 16^3 = 2^8^3 = 16,777,216体素
-    // 八叉树最大深度为8
-    public class ChunkNode
+    private ChunkNode _node;
+    private Dictionary<string, Entity> _entities;
+    private class ChunkNode
     {
-      public ChunkNode[] _nodes;
-      // _voxel应该是材质id，之后从世界材质表中获取真实材质
-      private int _voxel;
-      public int GetVoxel(int x, int y, int z, int depth)
+      private ChunkNode? _parent;
+      private ChunkNode[]? _children;
+      private Block? _block;
+      private int _depth;
+      public ChunkNode(ChunkNode? parent, ChunkNode[]? children, Block? block, int depth)
       {
-        if (depth > 7) throw new Exception("Depth overflow");
-        // 通常不需要使用GetVoxel()方法，渲染时只需要顺序遍历就可以了
-        // 此方法只在随机读取和写入方块时会用到
+        _parent = parent;
+        _children = children;
+        _block = block;
+        _depth = depth;
+      }
+      public int CalculateChildIndex(Vector3i position)
+      {
+        int index = 0;
+        int half = 1 << _depth;
+        if (position.X >= half) index += 1;
+        if (position.Y >= half) index += 2;
+        if (position.Z >= half) index += 4;
+        return index;
+      }
+      public Vector3i CalculatePositionInChild(Vector3i position)
+      {
+        int half = 1 << _depth;
+        if (position.X >= half) position.X -= half;
+        if (position.Y >= half) position.Y -= half;
+        if (position.Z >= half) position.Z -= half;
+        return position;
+      }
+      public void OptimizeNodes()
+      {
+        if (_children == null) return;
+        Block firstChildBlock = _children[0].GetBlockIfNoChild();
+        if (firstChildBlock == null) return;
+        bool matchAllChildren = true;
 
-        // 传入的x, y, z为整个Chunk内的相对坐标，由Chunk将世界坐标翻译为区块内相对坐标
-        // 0 < x, y, z < 256
-        // 0 < depth < 7
-        // depth为当前树深度
-        if (_nodes != null)
+        foreach (ChunkNode child in _children)
         {
-          int i = 0;
-          // 如果子节点不为空，继续向下查找
-          int half = (1 << depth) - 1;
-          if (x > half) i += 1; x -= half;
-          if (y > half) i += 2; y -= half;
-          if (z > half) i += 4; z -= half;
-          return _nodes[i].GetVoxel(x, y, z, depth++);
+          if (child.GetBlockIfNoChild() != firstChildBlock) matchAllChildren = false;
         }
-        else
+        if (matchAllChildren)
         {
-          // 如果为没有子节点了，那么就直接返回本块
-          return _voxel;
+          _children = null;
+          _block = firstChildBlock;
         }
+        _parent?.OptimizeNodes();
       }
-      public ChunkNode(int voxel)
+      public Block GetBlock(Vector3i position)
       {
-        _voxel = voxel;
+        if (_children == null) return _block;
+        return _children[CalculateChildIndex(position)].GetBlock(CalculatePositionInChild(position));
       }
-      public ChunkNode(params ChunkNode[] nodes)
+      public Block GetBlockIfNoChild()
       {
-        _nodes = nodes;
+        return _block;
       }
-      public ChunkNode[] GetChildNodes()
+      public void SetBlock(Vector3i position, Block block)
       {
-        return _nodes;
+        if (_depth == 7)
+        {
+          _block = block;
+          return;
+        }
+        if (_children == null)
+        {
+          _children = new ChunkNode[8];
+          Array.Fill<ChunkNode>(_children, new ChunkNode(this, null, _block, _depth + 1));
+        }
+        _children[CalculateChildIndex(position)].SetBlock(position, block);
+        OptimizeNodes();
       }
-      public int GetVoxel()
+      public void SetBlocks(Vector3i start, Vector3i end, Block block)
       {
-        return _voxel;
+        // TODO
+        OptimizeNodes();
       }
     }
-    private ChunkNode _chunkNode;
     public Chunk()
     {
-      _chunkNode = new ChunkNode(
-        new ChunkNode(1),
-        new ChunkNode(1),
-        new ChunkNode(1),
-        new ChunkNode(0),
-        new ChunkNode(0),
-        new ChunkNode(1),
-        new ChunkNode(
-          new ChunkNode(1),
-          new ChunkNode(1),
-          new ChunkNode(1),
-          new ChunkNode(1),
-          new ChunkNode(0),
-          new ChunkNode(0),
-          new ChunkNode(1),
-          new ChunkNode(0)
-        ),
-        new ChunkNode(1)
-      );
     }
-    public ChunkNode GetChunkNode()
+    public Block GetBlock(Vector3i position)
     {
-      return _chunkNode;
+      return _node.GetBlock(position);
     }
-    public void StoreChunk()
+    public void SetBlock(Vector3i position, Block block)
     {
-      // TODO 存储区块，使用线性八叉树
+      _node.SetBlock(position, block);
+    }
+    public void SetBlocks(Vector3i start, Vector3i end, Block block)
+    {
+      _node.SetBlocks(start, end, block);
     }
   }
 }
