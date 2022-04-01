@@ -4,11 +4,15 @@ namespace Project2398.Common
 {
   public class World
   {
-    private Dictionary<string, Chunk> _chunks = new Dictionary<string, Chunk>();
-    public World() { }
-    public string CaclulateChunkIndex(Vector3i position)
+    private Dictionary<Vector3i, Chunk> _chunks = new Dictionary<Vector3i, Chunk>();
+    private Camera _camera;
+    public World(Camera camera)
     {
-      return $"{position.X / 256}.{position.Y / 256}.{position.Z / 256}";
+      _camera = camera;
+    }
+    public Vector3i CaclulateChunkIndex(Vector3i position)
+    {
+      return position / 256;
     }
     public Vector3i CalculatePositionInChunk(Vector3i position)
     {
@@ -21,7 +25,10 @@ namespace Project2398.Common
       {
         return chunk.GetBlock(CalculatePositionInChunk(position));
       }
-      throw new Exception("The requested position has not been loaded");
+      else
+      {
+        throw new Exception("The requested position has not been loaded");
+      }
     }
     public void SetBlock(Vector3i position, Block block)
     {
@@ -30,11 +37,26 @@ namespace Project2398.Common
       {
         chunk.SetBlock(CalculatePositionInChunk(position), block);
       }
-      throw new Exception("The requested position has not been loaded");
+      else
+      {
+        throw new Exception("The requested position has not been loaded");
+      }
     }
     public void SetBlocks(Vector3i start, Vector3i end, Block block)
     {
       // TODO
+    }
+    public void LoadChunk(Vector3i position)
+    {
+      Chunk chunk = new Chunk();
+      _chunks.Add(position, chunk);
+    }
+    public void Render()
+    {
+      foreach (KeyValuePair<Vector3i, Chunk> pair in _chunks)
+      {
+        pair.Value.Render(pair.Key, _camera);
+      }
     }
   }
 }
