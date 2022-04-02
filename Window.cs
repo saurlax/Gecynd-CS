@@ -24,7 +24,7 @@ namespace Project2398
     {
       base.OnLoad();
       GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-      _camera = new Camera(new Vector3(0.0f, 10.0f, 0.0f), Size.X / (float)Size.Y);
+      _camera = new Camera(new Vector3(0.0f, 6.0f, 0.0f), Size.X / (float)Size.Y);
       CursorGrabbed = true;
       _block = new RenderBlock();
       _world = new World(_camera);
@@ -32,9 +32,15 @@ namespace Project2398
       _world.LoadChunk(new Vector3i(1, 0, 0));
       _world.LoadChunk(new Vector3i(0, 0, 1));
       _world.LoadChunk(new Vector3i(1, 0, 1));
-      _world.SetBlock(new Vector3i(1, 56, 32), _block);
-      _world.SetBlock(new Vector3i(1, 56, 36), _block);
-      _world.SetBlock(new Vector3i(342, 56, 32), _block);
+      // _world.SetBlock(new Vector3i(1, 56, 32), _block);
+      _world.SetBlock(new Vector3i(4, 8, 4), _block);
+      _world.SetBlock(new Vector3i(5, 8, 4), _block);
+      _world.SetBlock(new Vector3i(4, 8, 5), _block);
+      _world.SetBlock(new Vector3i(4, 7, 4), _block);
+      // _world.SetBlock(new Vector3i(3, 8, 4), _block);
+      // _world.SetBlock(new Vector3i(1, 56, 36), _block);
+      // _world.SetBlock(new Vector3i(342, 56, 32), _block);
+      GL.Enable(EnableCap.CullFace);
     }
     private int time = Environment.TickCount;
     private int count = 0;

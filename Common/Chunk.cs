@@ -25,7 +25,7 @@ namespace Project2398.Common
       public int CalculateChildIndex(Vector3i position)
       {
         int index = 0;
-        int half = 1 << (7 - _depth);
+        int half = 1 << (6 - _depth);
         if (position.X >= half) index += 1;
         if (position.Y >= half) index += 2;
         if (position.Z >= half) index += 4;
@@ -33,7 +33,7 @@ namespace Project2398.Common
       }
       public Vector3i CalculatePositionInChild(Vector3i position)
       {
-        int half = 1 << (7 - _depth);
+        int half = 1 << (6 - _depth);
         if (position.X >= half) position.X -= half;
         if (position.Y >= half) position.Y -= half;
         if (position.Z >= half) position.Z -= half;
@@ -65,7 +65,7 @@ namespace Project2398.Common
         Dictionary<Vector4i, Block> blocks = new Dictionary<Vector4i, Block>();
         if (_children == null)
         {
-          blocks.Add(new Vector4i(0, 0, 0, 1 << (8 - _depth)), _block);
+          blocks.Add(new Vector4i(0, 0, 0, 1 << (7 - _depth)), _block);
         }
         else
         {
@@ -73,7 +73,7 @@ namespace Project2398.Common
           {
             foreach (KeyValuePair<Vector4i, Block> pair in _children[i].GetAllBlocks())
             {
-              int half = 1 << (7 - _depth);
+              int half = 1 << (6 - _depth);
               blocks.Add(new Vector4i(
                 pair.Key.X + half * (i % 2),
                 pair.Key.Y + half * ((i / 2) % 2),
@@ -91,15 +91,20 @@ namespace Project2398.Common
       }
       public void SetBlock(Vector3i position, Block block)
       {
-        if (_depth == 8)
+        if (_depth == 7)
         {
           _block = block;
+          _children = null;
           return;
         }
         if (_children == null)
         {
+          _block = null;
           _children = new ChunkNode[8];
-          Array.Fill<ChunkNode>(_children, new ChunkNode(this, null, Block.BLOCK, _depth + 1));
+          for (int i = 0; i < 8; i++)
+          {
+            _children[i] = new ChunkNode(this, null, Block.NULL, _depth + 1);
+          }
           _children[CalculateChildIndex(position)].SetBlock(CalculatePositionInChild(position), block);
         }
         else
@@ -107,7 +112,6 @@ namespace Project2398.Common
           _children[CalculateChildIndex(position)].SetBlock(CalculatePositionInChild(position), block);
           OptimizeNodes();
         }
-        Console.WriteLine(_children);
       }
       public void SetBlocks(Vector3i start, Vector3i end, Block block)
       {
@@ -117,7 +121,7 @@ namespace Project2398.Common
     }
     public Chunk()
     {
-      _node = new ChunkNode(null, null, new Block(), 0);
+      _node = new ChunkNode(null, null, Block.NULL, 0);
       _blocks = _node.GetAllBlocks();
       _entities = new Dictionary<string, Entity>();
     }
@@ -130,10 +134,6 @@ namespace Project2398.Common
       _node.SetBlock(position, block);
       // TODO Too waste
       _blocks = _node.GetAllBlocks();
-      foreach (KeyValuePair<Vector4i, Block> pair in _blocks)
-      {
-        Console.WriteLine($"{pair.Key}: {pair.Value}");
-      }
     }
     public void SetBlocks(Vector3i start, Vector3i end, Block block)
     {

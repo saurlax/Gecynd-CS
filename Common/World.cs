@@ -12,11 +12,11 @@ namespace Project2398.Common
     }
     public Vector3i CaclulateChunkIndex(Vector3i position)
     {
-      return position / 256;
+      return position / 128;
     }
     public Vector3i CalculatePositionInChunk(Vector3i position)
     {
-      return new Vector3i(position.X % 256, position.Y % 256, position.Z % 256);
+      return new Vector3i(position.X % 128, position.Y % 128, position.Z % 128);
     }
     public Block GetBlock(Vector3i position)
     {
