@@ -1,7 +1,7 @@
 ## Project2398
-一款体素沙盒游戏
+It will become a more sophisticated voxel sandbox game that supports modules. Exquisite simulation of all things on earth, allowing players to create and share freely more naturally.
 
-### Dotnet命令
-还原NuGet包：dotnet restore
-运行程序：dotnet run
-发布程序：dotnet publish
+### Scripts
+* dotnet restore
+* dotnet run
+* dotnet publish
