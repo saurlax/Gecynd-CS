@@ -1,7 +1,7 @@
 using OpenTK.Mathematics;
 using Project2398.Client;
 
-namespace Project2398
+namespace Project2398.Common
 {
   public class Entity
   {

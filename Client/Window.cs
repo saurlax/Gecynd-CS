@@ -1,18 +1,22 @@
-using System;
+using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 
+using Project2398.Common;
+
 namespace Project2398.Client
 {
   public class Window : GameWindow
   {
-    public Player player;
+    static String name = Process.GetCurrentProcess().ProcessName;
+    PerformanceCounter cpu = new PerformanceCounter("Process", "% Processor Time", name);
+    PerformanceCounter ram = new PerformanceCounter("Process", "Working Set", name);
+
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
     {
-      player = new Player(new Vector3(0, 0, 0));
     }
 
     protected override void OnLoad()
@@ -28,13 +32,22 @@ namespace Project2398.Client
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
     }
 
+    int time = Environment.TickCount;
+    int fps = 0;
+
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
+      fps++;
+      int tick = Environment.TickCount;
+      if (tick - time >= 1000)
+      {
+        Title = $"Project2398 Early Access | FPS: {fps} | CPU: {cpu.NextValue().ToString("f2")}% | RAM: {(ram.NextValue() / 1024 / 1024).ToString("f2")}MB";
+        fps = 0;
+        time = tick;
+      }
       base.OnUpdateFrame(e);
-      
       if (KeyboardState.IsKeyDown(Keys.Escape)) Close();
 
-      player.HandleMove(e, KeyboardState);
     }
   }
 }
