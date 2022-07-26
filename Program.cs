@@ -9,24 +9,15 @@ namespace Project2398
 {
   public static class Program
   {
-    static World world = new World();
-    static String[] modsDir = Directory.GetDirectories("./Mods");
-
-    static void Init()
-    {
-      Array.ForEach<String>(modsDir, (String s) =>
-      {
-        Console.WriteLine($"Loading mod: {s}");
-        Mod.Load(s);
-      });
-    }
+    public static Project2398 Instance = new Project2398();
 
     static void Main(String[] args)
     {
-      Init();
-
+      Instance.LoadMod();
+      
       if (Array.Exists<String>(args, (String arg) => { return arg == "--server"; }))
       {
+        Console.WriteLine("Starting in pure server mode.");
       }
       else
       {
@@ -41,7 +32,6 @@ namespace Project2398
         Window window = new Window(GameWindowSettings.Default, nativeWindowSettings);
         window.Run();
       }
-
     }
   }
 }

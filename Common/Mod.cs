@@ -1,3 +1,5 @@
+using System.Xml;
+
 using Neo.IronLua;
 
 namespace Project2398.Common
@@ -11,9 +13,23 @@ namespace Project2398.Common
     {
     }
 
+    public static void LoadAll()
+    {
+      Array.ForEach<String>(Directory.GetDirectories("./Mods"), (String s) => { Load(s); });
+    }
+
     public static void Load(String path)
     {
-      env.DoChunk(path + "/init.lua");
+      try
+      {
+        Console.WriteLine($"Loading mod {path}");
+        env.DoChunk(path + "/Init.lua");
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Could not load mod {path}:");
+        Console.WriteLine(e.Message);
+      }
     }
   }
 }

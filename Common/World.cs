@@ -1,7 +1,45 @@
+using OpenTK.Mathematics;
+
+using Project2398.Client;
+
 namespace Project2398.Common
 {
   public class World
   {
-    Chunk chunk = new Chunk();
+    Dictionary<Vector3i, Chunk> _chunks = new Dictionary<Vector3i, Chunk>();
+
+    public void LoadChunk(Vector3i position)
+    {
+      _chunks.TryAdd(position, new Chunk());
+    }
+
+    public Dictionary<Vector3i, Chunk> GetChunks()
+    {
+      return _chunks;
+    }
+
+    public Chunk GetChunk(Vector3i position)
+    {
+      Chunk chunk;
+      if (!_chunks.TryGetValue(position / Chunk.CHUNK_SIZE, out chunk))
+      {
+        throw new Exception("Position not loaded yet");
+      }
+      else
+      {
+        return chunk;
+      }
+    }
+
+    public Block GetBlock(Vector3i position)
+    {
+      return GetChunk(position).GetBlock(new Vector3i(position.X % Chunk.CHUNK_SIZE, position.Y % Chunk.CHUNK_SIZE, position.Z % Chunk.CHUNK_SIZE));
+
+    }
+
+    public void SetBlock(Vector3i position, Block block)
+    {
+      GetChunk(position).SetBlock(new Vector3i(position.X % Chunk.CHUNK_SIZE, position.Y % Chunk.CHUNK_SIZE, position.Z % Chunk.CHUNK_SIZE), block);
+    }
   }
 }
