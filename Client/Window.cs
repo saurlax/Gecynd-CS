@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.Common;
@@ -11,12 +10,7 @@ namespace Project2398.Client
 {
   public class Window : GameWindow
   {
-    static String name = Process.GetCurrentProcess().ProcessName;
-    PerformanceCounter cpu = new PerformanceCounter("Process", "% Processor Time", name);
-    PerformanceCounter ram = new PerformanceCounter("Process", "Working Set", name);
-
-    public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
-    { }
+    public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings) { }
 
     protected override void OnLoad()
     {
@@ -38,6 +32,7 @@ namespace Project2398.Client
 
     int time = Environment.TickCount;
     int fps = 0;
+    int lastFPS = 0;
 
     bool _firstMove = true;
     Vector2 _lastPos;
@@ -53,10 +48,11 @@ namespace Project2398.Client
       int tick = Environment.TickCount;
       if (tick - time >= 1000)
       {
-        Title = $"Project2398 Early Access | Position: {((Vector3i)Renderer.Camera.Position)} | FPS: {fps} | CPU/RAM: {cpu.NextValue().ToString("f2")}%, {(ram.NextValue() / 1024 / 1024).ToString("f2")}MB";
+        lastFPS = fps;
         fps = 0;
         time = tick;
       }
+      Title = $"Project2398 | FPS: {lastFPS} | {Renderer.Camera.Position.X.ToString("f3")}/{Renderer.Camera.Position.Y.ToString("f3")}/{Renderer.Camera.Position.Z.ToString("f3")}";
 
       if (KeyboardState.IsKeyDown(Keys.E))
       {

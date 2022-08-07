@@ -14,7 +14,7 @@ namespace Project2398
     static void Main(String[] args)
     {
       Instance.LoadMod();
-      
+
       if (Array.Exists<String>(args, (String arg) => { return arg == "--server"; }))
       {
         Console.WriteLine("Starting in pure server mode.");

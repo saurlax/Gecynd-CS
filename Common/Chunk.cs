@@ -5,14 +5,14 @@ namespace Project2398.Common
 {
   public class Chunk
   {
-    public static readonly int DEPTH = 8;
-    public static readonly int CHUNK_SIZE = (1 << DEPTH) - 1;
+    public static readonly int MAX_LEVEL = 8;
+    public static readonly int SIZE = (1 << MAX_LEVEL);
 
-    ChunkNode _node = new ChunkNode(0);
+    ChunkNode _node = new ChunkNode(MAX_LEVEL, null);
 
     void TestPosition(Vector3i position)
     {
-      if (position.X > CHUNK_SIZE || position.Y > CHUNK_SIZE || position.Z > CHUNK_SIZE ||
+      if (position.X > SIZE || position.Y > SIZE || position.Z > SIZE ||
           position.X < 0 || position.Y < 0 || position.Z < 0)
       {
         throw new Exception("The position provided is beyond the scope of the chunk.");
@@ -36,76 +36,100 @@ namespace Project2398.Common
       return _node;
     }
 
-    public class ChunkNode
+    public class ChunkNode : IEnumerable
     {
-      int _depth, _size, _half;
-      Block _all = Block.NULL;
-      ChunkNode[] _nodes = new ChunkNode[8];
+      public int Level { get; }
+      int _size, _half;
+      public Block? All { get; private set; } = Block.NULL;
+      public ChunkNode? ParentNode { get; }
+      public ChunkNode[] ChildNodes { get; } = new ChunkNode[8];
 
-      public ChunkNode(int depth)
+      public ChunkNode(int level, ChunkNode? parent)
       {
-        _depth = depth;
-        _size = (1 << (Chunk.DEPTH - _depth)) - 1;
-        _half = (_size - 1) >> 1;
+        Level = level;
+        _size = 1 << Level;
+        _half = _size >> 1;
       }
 
       int GetChildNodeIndex(Vector3i position)
       {
         int index = 0;
-        if (position.X % _size > _half) index |= 0b100;
-        if (position.Y % _size > _half) index |= 0b010;
-        if (position.Z % _size > _half) index |= 0b101;
+        if (position.X % _size >= _half) index |= 0b100;
+        if (position.Y % _size >= _half) index |= 0b010;
+        if (position.Z % _size >= _half) index |= 0b001;
         return index;
       }
 
       public Block GetBlock(Vector3i position)
       {
-        if (_all != null)
+        if (All == null)
         {
-          return _all;
+          return ChildNodes[GetChildNodeIndex(position)].GetBlock(position);
         }
         else
         {
-          return _nodes[GetChildNodeIndex(position)].GetBlock(position);
+          return All;
         }
       }
 
       public void SetBlock(Vector3i position, Block block)
       {
-        if (_depth != Chunk.DEPTH)
+        if (Level == Chunk.MAX_LEVEL)
+        {
+          All = block;
+        }
+        else
         {
           int index = GetChildNodeIndex(position);
-          if (_nodes[index] == null)
+          if (ChildNodes[index] == null)
           {
             for (int i = 0; i < 8; i++)
             {
-              _nodes[i] = new ChunkNode(_depth + 1);
+              ChildNodes[i] = new ChunkNode(Level - 1, this);
             }
           }
-          _all = null;
-          _nodes[index].SetBlock(position, block);
-        }
-        else
-        {
-          _all = block;
+          All = null;
+          ChildNodes[index].SetBlock(position, block);
         }
       }
 
-      public Dictionary<Vector4i, Block> GetAllNodes(Vector3i offset)
+      public IEnumerator GetEnumerator()
       {
-        Dictionary<Vector4i, Block> nodes = new Dictionary<Vector4i, Block>();
-        if (_all == null)
+        return new ChunkNodeEnumerator(this);
+      }
+    }
+
+    public class ChunkNodeEnumerator : IEnumerator
+    {
+      ChunkNode _node;
+      int _level, _index;
+
+      public ChunkNodeEnumerator(ChunkNode node)
+      {
+        _node = node;
+      }
+
+      public bool MoveNext()
+      {
+        if (_index == 7)
         {
-          for (int i = 0; i < 8; i++)
-          {
-            nodes.Concat(_nodes[i].GetAllNodes(offset + new Vector3i((i & 0b100) >> 2, (i & 0b010) >> 1, i & 0b100) * _half));
-          }
+          _index = 0;
         }
-        else
+        return true;
+      }
+
+      public object Current
+      {
+        get
         {
-          nodes.Add(new Vector4i(offset, _size), _all);
+          return _node.ChildNodes[_index];
         }
-        return nodes;
+      }
+
+      public void Reset()
+      {
+        _level = _node.Level;
+        _index = -1;
       }
     }
   }

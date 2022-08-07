@@ -21,7 +21,7 @@ namespace Project2398.Common
     public Chunk GetChunk(Vector3i position)
     {
       Chunk chunk;
-      if (!_chunks.TryGetValue(position / Chunk.CHUNK_SIZE, out chunk))
+      if (!_chunks.TryGetValue(position / Chunk.SIZE, out chunk))
       {
         throw new Exception("Position not loaded yet");
       }
@@ -33,13 +33,13 @@ namespace Project2398.Common
 
     public Block GetBlock(Vector3i position)
     {
-      return GetChunk(position).GetBlock(new Vector3i(position.X % Chunk.CHUNK_SIZE, position.Y % Chunk.CHUNK_SIZE, position.Z % Chunk.CHUNK_SIZE));
+      return GetChunk(position).GetBlock(new Vector3i(position.X % Chunk.SIZE, position.Y % Chunk.SIZE, position.Z % Chunk.SIZE));
 
     }
 
     public void SetBlock(Vector3i position, Block block)
     {
-      GetChunk(position).SetBlock(new Vector3i(position.X % Chunk.CHUNK_SIZE, position.Y % Chunk.CHUNK_SIZE, position.Z % Chunk.CHUNK_SIZE), block);
+      GetChunk(position).SetBlock(new Vector3i(position.X % Chunk.SIZE, position.Y % Chunk.SIZE, position.Z % Chunk.SIZE), block);
     }
   }
 }
