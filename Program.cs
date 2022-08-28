@@ -2,14 +2,14 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
-using Project2398.Client;
-using Project2398.Common;
+using Gecynd.Client;
+using Gecynd.Common;
 
-namespace Project2398
+namespace Gecynd
 {
   public static class Program
   {
-    public static Project2398 Instance = new Project2398();
+    public static Gecynd Instance = new Gecynd();
 
     static void Main(String[] args)
     {
@@ -24,7 +24,7 @@ namespace Project2398
         NativeWindowSettings nativeWindowSettings = new NativeWindowSettings()
         {
           Size = new Vector2i(800, 600),
-          Title = "Project2398",
+          Title = "Gecynd",
           NumberOfSamples = 4,
           // This is needed to run on macos
           Flags = ContextFlags.ForwardCompatible,

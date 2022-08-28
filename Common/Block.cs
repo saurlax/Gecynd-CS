@@ -1,9 +1,9 @@
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
-using Project2398.Client;
+using Gecynd.Client;
 
-namespace Project2398.Common
+namespace Gecynd.Common
 {
   public class Block
   {

@@ -1,9 +1,9 @@
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 
-using Project2398.Common;
+using Gecynd.Common;
 
-namespace Project2398.Client
+namespace Gecynd.Client
 {
   public class Renderer
   {
@@ -77,7 +77,7 @@ namespace Project2398.Client
       GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 5 * sizeof(float));
       GL.EnableVertexAttribArray(2);
     }
-    public static void Render(Project2398 instance)
+    public static void Render(Gecynd instance)
     {
       _shader.Use();
       _shader.SetMatrix4("view", Camera.GetViewMatrix());

@@ -1,7 +1,7 @@
 using OpenTK.Mathematics;
 using System;
 
-namespace Project2398.Client
+namespace Gecynd.Client
 {
   public class Camera
   {

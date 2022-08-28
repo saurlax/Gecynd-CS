@@ -1,7 +1,7 @@
 using System.Collections;
 using OpenTK.Mathematics;
 
-namespace Project2398.Common
+namespace Gecynd.Common
 {
   public class Chunk
   {

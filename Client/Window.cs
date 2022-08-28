@@ -4,9 +4,9 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Mathematics;
 
-using Project2398.Common;
+using Gecynd.Common;
 
-namespace Project2398.Client
+namespace Gecynd.Client
 {
   public class Window : GameWindow
   {
@@ -52,7 +52,7 @@ namespace Project2398.Client
         fps = 0;
         time = tick;
       }
-      Title = $"Project2398 | FPS: {lastFPS} | {Renderer.Camera.Position.X.ToString("f3")}/{Renderer.Camera.Position.Y.ToString("f3")}/{Renderer.Camera.Position.Z.ToString("f3")}";
+      Title = $"Gecynd | FPS: {lastFPS} | {Renderer.Camera.Position.X.ToString("f3")}/{Renderer.Camera.Position.Y.ToString("f3")}/{Renderer.Camera.Position.Z.ToString("f3")}";
 
       if (KeyboardState.IsKeyDown(Keys.E))
       {

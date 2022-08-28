@@ -2,7 +2,7 @@ using System.Xml;
 
 using Neo.IronLua;
 
-namespace Project2398.Common
+namespace Gecynd.Common
 {
   public class Mod
   {

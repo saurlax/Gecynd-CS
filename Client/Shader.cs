@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Project2398.Client
+namespace Gecynd.Client
 {
   // A simple class meant to help create shaders.
   public class Shader

@@ -1,8 +1,8 @@
 using OpenTK.Mathematics;
 
-using Project2398.Client;
+using Gecynd.Client;
 
-namespace Project2398.Common
+namespace Gecynd.Common
 {
   public class World
   {

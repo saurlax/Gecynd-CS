@@ -1,14 +1,14 @@
 using OpenTK.Mathematics;
 
-using Project2398.Common;
+using Gecynd.Common;
 
-namespace Project2398
+namespace Gecynd
 {
-  public class Project2398
+  public class Gecynd
   {
     public World World = new World();
 
-    public Project2398()
+    public Gecynd()
     {
       Block testBlock = new Block("test-block");
       World.LoadChunk(Vector3i.Zero);

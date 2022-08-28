@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
-namespace Project2398.Client
+namespace Gecynd.Client
 {
   public class Texture
   {
