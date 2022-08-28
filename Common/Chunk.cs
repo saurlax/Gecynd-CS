@@ -33,7 +33,7 @@ namespace Project2398.Common
     /// <summary>
     /// Block storage structure implemented by octree.
     /// </summary>
-    public class ChunkNode : IEnumerable
+    public class ChunkNode : IEnumerable<Block>
     {
       /// <summary>
       /// Size level of this ChunkNode.
@@ -101,44 +101,83 @@ namespace Project2398.Common
         }
       }
 
-      public IEnumerator GetEnumerator()
+      public IEnumerator<Block> GetEnumerator()
       {
         return new ChunkNodeEnumerator(this);
       }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return this.GetEnumerator();
+      }
     }
 
-    public class ChunkNodeEnumerator : IEnumerator
+    class ChunkNodeEnumerator : IEnumerator<Block>
     {
       ChunkNode _node;
-      int _level, _index;
+      IEnumerator<Block>? _childEnum;
+      int _index = -1;
 
       public ChunkNodeEnumerator(ChunkNode node)
       {
         _node = node;
       }
 
-      public bool MoveNext()
-      {
-        if (_index == 7)
-        {
-          _index = 0;
-        }
-        return true;
-      }
-
-      public object Current
+      public Block Current
       {
         get
         {
-          return _node.ChildNodes[_index];
+          if (_node.All == null)
+          {
+            return _childEnum.Current;
+          }
+          else
+          {
+            return _node.All;
+          }
+        }
+      }
+      object? IEnumerator.Current
+      {
+        get { return this.Current; }
+      }
+
+      public bool MoveNext()
+      {
+        if (_node.All == null)
+        {
+          if (_childEnum == null || !_childEnum.MoveNext())
+          {
+            _index++;
+            if (_index < 8)
+            {
+              _childEnum = _node.ChildNodes[_index].GetEnumerator();
+              _childEnum.MoveNext();
+              return true;
+            }
+            else
+            {
+              return false;
+            }
+          }
+          else
+          {
+            return true;
+          }
+        }
+        else
+        {
+          _index++;
+          return _index == 0;
         }
       }
 
       public void Reset()
       {
-        _level = _node.Level;
         _index = -1;
       }
+
+      public void Dispose() { }
     }
   }
 }
