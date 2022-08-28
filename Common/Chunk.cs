@@ -7,8 +7,7 @@ namespace Project2398.Common
   {
     public static readonly int MAX_LEVEL = 8;
     public static readonly int SIZE = (1 << MAX_LEVEL);
-
-    ChunkNode _node = new ChunkNode(MAX_LEVEL, null);
+    public ChunkNode RootNode { get; private set; } = new ChunkNode(MAX_LEVEL, null);
 
     void TestPosition(Vector3i position)
     {
@@ -22,27 +21,36 @@ namespace Project2398.Common
     public Block GetBlock(Vector3i position)
     {
       TestPosition(position);
-      return _node.GetBlock(position);
+      return RootNode.GetBlock(position);
     }
 
     public void SetBlock(Vector3i position, Block block)
     {
       TestPosition(position);
-      _node.SetBlock(position, block);
+      RootNode.SetBlock(position, block);
     }
 
-    public ChunkNode GetRootNode()
-    {
-      return _node;
-    }
-
+    /// <summary>
+    /// Block storage structure implemented by octree.
+    /// </summary>
     public class ChunkNode : IEnumerable
     {
+      /// <summary>
+      /// Size level of this ChunkNode.
+      /// </summary>
       public int Level { get; }
-      int _size, _half;
+      /// <summary>
+      /// If all nodes of this ChunkNode are blocks of the same type, it will be designated as blocks of this type; If all nodes are not the same, it will be null. Used to optimize rendering.
+      /// </summary>
       public Block? All { get; private set; } = Block.NULL;
+      /// <summary>
+      /// A Block that can be roughly regarded as this ChunkNode. It is often used to optimize the rendering of distant ChunkNode.
+      /// </summary>
+      public Block Rough { get; private set; } = Block.NULL;
       public ChunkNode? ParentNode { get; }
       public ChunkNode[] ChildNodes { get; } = new ChunkNode[8];
+
+      int _size, _half;
 
       public ChunkNode(int level, ChunkNode? parent)
       {
